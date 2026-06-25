@@ -20,11 +20,11 @@ const state = {
     spendingCoins: [],
     transactions: [],
     utilities: [
-        { id: 1, name: 'Electric Company', amount: 85.00, dueIn: 30, overdue: false, paid: false },
-        { id: 2, name: 'Water Works', amount: 45.00, dueIn: 25, overdue: false, paid: false },
-        { id: 3, name: 'Internet & Cable', amount: 120.00, dueIn: 20, overdue: false, paid: false },
-        { id: 4, name: 'Gas & Heating', amount: 65.00, dueIn: 15, overdue: false, paid: false },
-        { id: 5, name: 'Trash Collection', amount: 25.00, dueIn: 5, overdue: false, paid: false },
+        { id: 1, name: 'Electric Company', amount: 85.00, dueIn: 30, overdue: false, paid: false, autoPay: false },
+        { id: 2, name: 'Water Works', amount: 45.00, dueIn: 25, overdue: false, paid: false, autoPay: false },
+        { id: 3, name: 'Internet & Cable', amount: 120.00, dueIn: 20, overdue: false, paid: false, autoPay: false },
+        { id: 4, name: 'Gas & Heating', amount: 65.00, dueIn: 15, overdue: false, paid: false, autoPay: false },
+        { id: 5, name: 'Trash Collection', amount: 25.00, dueIn: 5, overdue: false, paid: false, autoPay: false },
         // Rent spawns dynamically every 2 mins
     ],
     nextUtilityId: 6,
@@ -73,11 +73,18 @@ const state = {
         cooldown: 0,
         animProgress: 0,
     },
+    // Debug mode - set to true to make auto-pay trigger faster
+    debugMode: false,
 };
 
 // ===== DOM REFS =====
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
+
+// Helper to get the Matter.js canvas
+function getCanvas() {
+    return state.render?.canvas || $('#jar-canvas');
+}
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -108,6 +115,17 @@ document.addEventListener('DOMContentLoaded', () => {
     startRentSpawner();
     bindEvents();
     addTransaction('Initial Deposit', 500.00);
+    
+    // DEBUG: Press 'D' to toggle debug mode (faster auto-pay)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'd' || e.key === 'D') {
+            state.debugMode = !state.debugMode;
+            console.log(`🐛 Debug mode: ${state.debugMode ? 'ON (auto-pay every 1s)' : 'OFF (auto-pay every 5s)'}`);
+            if (state.debugMode) {
+                flashAutoPay('DEBUG MODE ON');
+            }
+        }
+    });
 });
 
 // ===== DATE =====
@@ -244,12 +262,19 @@ function renderUtilities() {
     list.innerHTML = state.utilities.map(u => `
         <div class="utility-item ${u.overdue && !u.paid ? 'utility-overdue' : ''} ${u.paid ? 'utility-paid' : ''}">
             <div>
-                <div class="utility-name">${u.name}</div>
+                <div class="utility-name">
+                    ${u.name}
+                    ${u.autoPay ? '<span class="auto-pay-badge">AUTO</span>' : ''}
+                </div>
                 <div class="utility-due">${u.paid ? '✓ PAID' : (u.overdue ? '⚠ OVERDUE!' : `Due in ${u.dueIn}s`)}</div>
             </div>
-            <div>
+            <div style="display:flex;align-items:center;gap:8px;">
                 <span class="utility-amount">$${u.amount.toFixed(2)}</span>
                 ${!u.paid ? `<button class="utility-pay-btn" onclick="payUtility(${u.id})">Pay</button>` : ''}
+                <div class="auto-pay-toggle ${u.autoPay ? 'active' : ''}" onclick="toggleAutoPay(${u.id})" title="${u.autoPay ? 'Disable Auto-Pay' : 'Enable Auto-Pay'}">
+                    <div class="auto-pay-checkbox"></div>
+                    <span>Auto</span>
+                </div>
             </div>
         </div>
     `).join('');
@@ -270,6 +295,131 @@ function payUtility(id) {
     addTransaction(`Paid: ${util.name}`, -util.amount);
     renderUtilities();
     updateUI();
+}
+
+function toggleAutoPay(id) {
+    const util = state.utilities.find(u => u.id === id);
+    if (!util) return;
+    
+    util.autoPay = !util.autoPay;
+    
+    if (util.autoPay) {
+        console.log(`⚡ Auto-pay enabled for: ${util.name}`);
+        // If it's overdue and auto-pay is enabled, pay it immediately!
+        if (util.overdue && !util.paid) {
+            setTimeout(() => payUtility(id), 100);
+        }
+    } else {
+        console.log(`❌ Auto-pay disabled for: ${util.name}`);
+    }
+    
+    renderUtilities();
+    updateUI();
+}
+
+function processAutoPay() {
+    // Find all utilities with auto-pay enabled that aren't paid yet
+    const autoPayUtilities = state.utilities.filter(u => u.autoPay && !u.paid && u.dueIn <= 0);
+    
+    if (autoPayUtilities.length === 0) return;
+    
+    let paidCount = 0;
+    
+    autoPayUtilities.forEach(util => {
+        if (state.balance >= util.amount) {
+            state.balance -= util.amount;
+            util.paid = true;
+            util.overdue = false;
+            addTransaction(`Auto-Paid: ${util.name}`, -util.amount);
+            console.log(`⚡ Auto-paid: ${util.name} - $${util.amount.toFixed(2)}`);
+            paidCount++;
+            
+            // Visual flash on the utility item
+            flashAutoPay(util.name);
+        } else {
+            console.warn(`⚠️ Insufficient funds for auto-pay: ${util.name} (need $${util.amount.toFixed(2)}, have $${state.balance.toFixed(2)})`);
+            util.overdue = true;
+        }
+    });
+    
+    if (paidCount > 0) {
+        renderUtilities();
+        updateUI();
+    }
+}
+
+function flashAutoPay(utilName) {
+    // Create a floating notification
+    const flash = document.createElement('div');
+    flash.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #38a169, #2f855a);
+        color: white;
+        padding: 20px 40px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 10px 40px rgba(56, 161, 105, 0.4);
+        animation: flashIn 0.3s ease-out, flashOut 0.5s ease-in 1.5s;
+        pointer-events: none;
+    `;
+    flash.innerHTML = `⚡ AUTO-PAID: ${utilName}`;
+    document.body.appendChild(flash);
+    
+    // Add animations
+    if (!document.getElementById('flash-animations')) {
+        const style = document.createElement('style');
+        style.id = 'flash-animations';
+        style.textContent = `
+            @keyframes flashIn {
+                from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+                to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            }
+            @keyframes flashOut {
+                from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                to { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    setTimeout(() => flash.remove(), 2000);
+}
+
+function enableAutoPayAll() {
+    const unpaidUtilities = state.utilities.filter(u => !u.paid);
+    
+    if (unpaidUtilities.length === 0) {
+        alert('All utilities are already paid! You\'re living the dream! 🎉');
+        return;
+    }
+    
+    const enableCount = unpaidUtilities.filter(u => !u.autoPay).length;
+    
+    if (enableCount === 0) {
+        alert('Auto-pay is already enabled for all unpaid utilities!');
+        return;
+    }
+    
+    // Enable auto-pay for all unpaid utilities
+    unpaidUtilities.forEach(u => {
+        u.autoPay = true;
+    });
+    
+    console.log(`⚡ Auto-pay enabled for ${enableCount} utilities!`);
+    
+    // Immediately process auto-pay
+    processAutoPay();
+    
+    renderUtilities();
+    updateUI();
+    
+    // Flash notification
+    flashAutoPay(`${enableCount} UTILITIES`);
 }
 
 // ===== DEPOSIT =====
@@ -341,7 +491,7 @@ function addCoinToJar(amount) {
 function createSingleCoin(amount) {
     if (!state.engine) return;
     
-    const canvas = $('#jar-canvas');
+    const canvas = getCanvas();
     const cw = canvas.width;
     const ch = canvas.height;
     
@@ -402,38 +552,39 @@ function getCoinLabel(amount) {
 function initPhysics() {
     const { Engine, Render, Runner, Bodies, Body, Composite, Events, Mouse, MouseConstraint, Constraint, Vector } = Matter;
     
-    const canvas = $('#jar-canvas');
     const container = $('#jar-container');
-    
     const cw = Math.max(container.clientWidth, 300);
     const ch = Math.max(container.clientHeight, 400);
     
     console.log('🎨 Initializing physics! Container:', container.clientWidth, 'x', container.clientHeight);
     console.log('🎨 Canvas will be:', cw, 'x', ch);
     
-    // Set canvas display size AND internal buffer size explicitly
-    canvas.width = cw;
-    canvas.height = ch;
-    canvas.style.width = cw + 'px';
-    canvas.style.height = ch + 'px';
-
+    // Create engine FIRST
     state.engine = Engine.create({
         gravity: { x: 0, y: 1 }
     });
-
+    
+    // Use element parameter instead of canvas - Matter.js creates its own canvas!
     state.render = Render.create({
-        canvas: canvas,
+        element: container,  // Pass the CONTAINER, not the canvas!
         engine: state.engine,
         options: {
             width: cw,
             height: ch,
             wireframes: false,
-            background: '#e8edf2', // Solid background so we can see rendering
+            background: '#e8edf2',
             pixelRatio: 1,
         }
     });
-
-    console.log('✅ Matter.js renderer created with background #e8edf2');
+    
+    console.log('✅ Matter.js renderer created with element:', container);
+    console.log('✅ Canvas created by Matter.js:', state.render.canvas);
+    
+    // NOW get the canvas that Matter.js created
+    const canvas = state.render.canvas;
+    canvas.id = 'jar-canvas';
+    canvas.style.width = cw + 'px';
+    canvas.style.height = ch + 'px';
 
     // Walls
     const wallThickness = 30;
@@ -443,7 +594,7 @@ function initPhysics() {
         isStatic: true,
         render: { 
             fillStyle: '#4a5568',
-            visible: true // Make sure floor is VISIBLE
+            visible: true
         },
         label: 'floor'
     });
@@ -1427,6 +1578,7 @@ function spawnRent() {
         dueIn: 24, // 24 "game seconds" ~2 real minutes
         overdue: false,
         paid: false,
+        autoPay: false, // Rent doesn't auto-pay by default (too expensive!)
     };
     state.utilities.push(rent);
     renderUtilities();
@@ -1507,8 +1659,9 @@ function smashJar() {
 
 function createShards() {
     const j = state.jarBody;
-    const cw = $('#jar-canvas').width;
-    const ch = $('#jar-canvas').height;
+    const canvas = getCanvas();
+    const cw = canvas.width;
+    const ch = canvas.height;
     
     console.log('🔨 Creating shards! Jar center:', j.x, j.y, 'Canvas:', cw, ch);
     
@@ -1671,8 +1824,9 @@ function buyNewJar() {
     state.shardPositions = [];
     
     // Recreate jar
-    const cw = $('#jar-canvas').width;
-    const ch = $('#jar-canvas').height;
+    const canvas = getCanvas();
+    const cw = canvas.width;
+    const ch = canvas.height;
     createJarBodies(cw, ch);
     
     state.jarIntact = true;
@@ -1722,8 +1876,9 @@ function reassembleJar() {
     state.shardBodies = [];
     state.shardPositions = [];
     
-    const cw = $('#jar-canvas').width;
-    const ch = $('#jar-canvas').height;
+    const canvas = getCanvas();
+    const cw = canvas.width;
+    const ch = canvas.height;
     createJarBodies(cw, ch);
     
     state.jarIntact = true;
@@ -1813,6 +1968,8 @@ let popupSpamInterval = null;
 
 function startReminderSystem() {
     // Count down utility due times
+    const tickInterval = state.debugMode ? 1000 : 5000; // 1s in debug, 5s normal
+    
     setInterval(() => {
         state.utilities.forEach(u => {
             if (!u.paid) {
@@ -1829,10 +1986,14 @@ function startReminderSystem() {
                 }
             }
         });
+        
+        // Process auto-pay for utilities that are due
+        processAutoPay();
+        
         renderUtilities();
         renderReminderList();
         updateUI();
-    }, 5000); // Every 5 seconds = 1 "game minute"
+    }, tickInterval); // Every 5 seconds = 1 "game minute" (1s in debug mode)
 
     // Make the close X button dodge the mouse
     const closeX = $('#reminder-close-x');
@@ -2171,6 +2332,9 @@ function bindEvents() {
     const glovesBtn = $('#buy-gloves-btn');
     if (glovesBtn) glovesBtn.addEventListener('click', buyGloves);
     
+    // Auto-Pay All button
+    $('#auto-pay-all-btn').addEventListener('click', enableAutoPayAll);
+    
     // Reassemble
     $('#reassemble-btn').addEventListener('click', reassembleJar);
     
@@ -2186,7 +2350,7 @@ function bindEvents() {
     $('#spend-cancel').addEventListener('click', cancelSpending);
     
     // Double-click on canvas to spend coins
-    $('#jar-canvas').addEventListener('dblclick', (e) => {
+    getCanvas().addEventListener('dblclick', (e) => {
         if (state.jarIntact) return;
         
         // Use Matter mouse for coordinate conversion
@@ -2207,7 +2371,7 @@ function bindEvents() {
     });
 
     // Clicking canvas in hammer mode near jar
-    $('#jar-canvas').addEventListener('click', (e) => {
+    getCanvas().addEventListener('click', (e) => {
         if (state.hammerMode && state.jarIntact) {
             const mPos = state.render.mouse.position;
             if (!mPos) return;

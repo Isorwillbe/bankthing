@@ -100,7 +100,10 @@
             <div class="card">
                 <div class="card-header">
                     <h3>Utility Bills</h3>
-                    <span class="card-badge badge-alert" id="overdue-count">0 Overdue</span>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <span class="card-badge badge-alert" id="overdue-count">0 Overdue</span>
+                        <button id="auto-pay-all-btn" class="corporate-btn btn-purple" title="Enable Auto-Pay for all utilities" style="padding:6px 12px;font-size:12px;">⚡ Auto-Pay All</button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="utility-list" id="utility-list">
@@ -139,7 +142,7 @@
             </div>
             <div class="jar-status" id="jar-status">Jar is intact.</div>
             <div class="jar-container" id="jar-container">
-                <canvas id="jar-canvas"></canvas>
+                <!-- Matter.js will create its own canvas here -->
             </div>
             <div class="jar-instructions" id="jar-instructions">
                 Add money to your jar. When you need it, grab the hammer and SMASH it open!
