@@ -1,0 +1,813 @@
+/* ================================================
+   FISCALCORE™ CORPORATE STYLESHEET
+   "Synergy. Compliance. Penny Jars."
+   ================================================ */
+
+/* --- RESET & BASE --- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --corp-navy: #1a2332;
+    --corp-blue: #2c5282;
+    --corp-light: #e2e8f0;
+    --corp-gray: #718096;
+    --corp-border: #cbd5e0;
+    --corp-bg: #f7fafc;
+    --corp-white: #ffffff;
+    --corp-green: #38a169;
+    --corp-red: #e53e3e;
+    --corp-gold: #d69e2e;
+    --corp-purple: #805ad5;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+    --font-corp: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    font-family: var(--font-corp);
+    background: var(--corp-bg);
+    color: var(--corp-navy);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+html {
+    height: 100%;
+}
+
+.hidden { display: none !important; }
+
+/* --- HEADER --- */
+.corporate-header {
+    background: var(--corp-navy);
+    color: var(--corp-white);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.logo-trademark {
+    font-size: 9px;
+    vertical-align: super;
+    color: var(--corp-gray);
+}
+
+.header-divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(255,255,255,0.2);
+}
+
+.header-nav {
+    display: flex;
+    gap: 16px;
+}
+
+.nav-item {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    cursor: default;
+    padding: 4px 0;
+}
+
+.nav-item.active {
+    color: var(--corp-white);
+    border-bottom: 2px solid var(--corp-blue);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-date {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+}
+
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-avatar {
+    width: 30px;
+    height: 30px;
+    background: var(--corp-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.user-name {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+}
+
+/* --- MAIN GRID --- */
+.main-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr 300px;
+    grid-template-rows: 1fr;
+    gap: 20px;
+    padding: 20px 24px;
+    flex: 1;
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;
+    min-height: 600px;
+}
+
+/* --- PANELS --- */
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.panel-center {
+    background: var(--corp-white);
+    border-radius: 8px;
+    border: 1px solid var(--corp-border);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 600px;
+}
+
+/* --- CARDS --- */
+.card {
+    background: var(--corp-white);
+    border-radius: 8px;
+    border: 1px solid var(--corp-border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--corp-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--corp-navy);
+}
+
+.card-badge {
+    font-size: 10px;
+    background: var(--corp-blue);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.badge-alert {
+    background: var(--corp-red);
+    animation: pulse-badge 1.5s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.card-body {
+    padding: 16px;
+}
+
+/* --- BALANCE DISPLAY --- */
+.balance-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.balance-display:last-child {
+    border-bottom: none;
+}
+
+.balance-label {
+    font-size: 13px;
+    color: var(--corp-gray);
+}
+
+.balance-amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--corp-navy);
+}
+
+.jar-balance {
+    color: var(--corp-gold);
+}
+
+.stat-number {
+    font-size: 16px;
+    color: var(--corp-gray);
+}
+
+/* --- UTILITY LIST --- */
+.utility-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.utility-item:last-child { border-bottom: none; }
+
+.utility-name {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.utility-due {
+    font-size: 11px;
+    color: var(--corp-gray);
+}
+
+.utility-amount {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.utility-overdue .utility-amount {
+    color: var(--corp-red);
+}
+
+.utility-paid {
+    opacity: 0.5;
+}
+
+.utility-pay-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+    background: var(--corp-green);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.utility-pay-btn:hover {
+    opacity: 0.9;
+}
+
+/* --- FORMS --- */
+.deposit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-label {
+    font-size: 12px;
+    color: var(--corp-gray);
+    font-weight: 500;
+}
+
+.corporate-input {
+    padding: 8px 12px;
+    border: 1px solid var(--corp-border);
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: var(--font-corp);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.corporate-input:focus {
+    border-color: var(--corp-blue);
+}
+
+/* --- BUTTONS --- */
+.corporate-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-corp);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-blue { background: var(--corp-blue); color: white; }
+.btn-green { background: var(--corp-green); color: white; }
+.btn-red { background: var(--corp-red); color: white; }
+.btn-gold { background: var(--corp-gold); color: white; }
+.btn-purple { background: var(--corp-purple); color: white; }
+
+.corporate-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* --- TRANSACTION LIST --- */
+.transaction-list {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+}
+
+.transaction-item:last-child { border-bottom: none; }
+
+.transaction-desc {
+    color: var(--corp-navy);
+}
+
+.transaction-amount {
+    font-weight: 600;
+}
+
+.transaction-amount.positive { color: var(--corp-green); }
+.transaction-amount.negative { color: var(--corp-red); }
+
+.transaction-empty, .reminder-empty {
+    text-align: center;
+    color: var(--corp-gray);
+    font-size: 12px;
+    padding: 20px 0;
+}
+
+/* --- REMINDER LIST --- */
+.reminder-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+}
+
+.reminder-item:last-child { border-bottom: none; }
+
+.reminder-name {
+    font-weight: 500;
+}
+
+.reminder-time {
+    color: var(--corp-gray);
+    font-size: 11px;
+}
+
+.reminder-urgent {
+    color: var(--corp-red);
+    font-weight: 600;
+}
+
+/* --- JAR ZONE --- */
+.jar-zone-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--corp-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--corp-white);
+}
+
+.jar-zone-header h3 {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.jar-tools {
+    display: flex;
+    gap: 8px;
+}
+
+.tool-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--corp-border);
+    border-radius: 4px;
+    background: var(--corp-light);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: var(--font-corp);
+    transition: all 0.2s;
+}
+
+.tool-btn:hover {
+    background: #ddd;
+}
+
+.hammer-btn {
+    font-size: 20px;
+    padding: 4px 10px;
+    border: 2px solid var(--corp-border);
+    background: var(--corp-light);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s;
+}
+
+.hammer-btn.active {
+    background: var(--corp-red);
+    border-color: var(--corp-red);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(229, 62, 62, 0.5);
+}
+
+.hammer-btn.active::after {
+    content: ' SMASH MODE';
+    font-size: 10px;
+    font-weight: 700;
+    color: white;
+    vertical-align: middle;
+}
+
+.buy-jar-btn {
+    font-size: 12px;
+}
+
+.jar-status {
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--corp-gray);
+    background: #f8f8f8;
+    border-bottom: 1px solid var(--corp-border);
+}
+
+.jar-container {
+    flex: 1;
+    position: relative;
+    background: linear-gradient(180deg, #f0f4f8 0%, #e2e8f0 100%);
+    min-height: 500px;
+    overflow: hidden;
+}
+
+#jar-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.jar-instructions {
+    padding: 10px 16px;
+    font-size: 11px;
+    color: var(--corp-gray);
+    text-align: center;
+    border-top: 1px solid var(--corp-border);
+    background: var(--corp-white);
+}
+
+/* --- SHARD INFO --- */
+.shard-info {
+    font-size: 13px;
+}
+
+.shard-info p {
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.shard-hint {
+    font-size: 11px;
+    color: var(--corp-gray);
+    font-style: italic;
+}
+
+/* ================================================
+   ANNOYING REMINDER STYLES
+   The chaos begins here.
+   ================================================ */
+
+.reminder-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: overlay-in 0.3s ease;
+}
+
+@keyframes overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.reminder-modal {
+    background: white;
+    border-radius: 8px;
+    padding: 32px;
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative;
+    border-top: 4px solid var(--corp-red);
+    animation: modal-shake 0.5s ease-in-out;
+}
+
+@keyframes modal-shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.reminder-modal-2 {
+    border-top-color: #ff6b00;
+    animation: modal-shake-hard 0.3s ease-in-out infinite;
+}
+
+@keyframes modal-shake-hard {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-8px) rotate(-2deg); }
+    75% { transform: translateX(8px) rotate(2deg); }
+}
+
+.reminder-siren {
+    font-size: 48px;
+    animation: siren-spin 0.5s linear infinite;
+}
+
+@keyframes siren-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.reminder-modal h2 {
+    font-size: 20px;
+    margin: 12px 0 8px;
+    color: var(--corp-red);
+    font-weight: 800;
+}
+
+.reminder-modal p {
+    font-size: 14px;
+    color: var(--corp-gray);
+    margin: 8px 0;
+}
+
+.reminder-threat {
+    color: var(--corp-red) !important;
+    font-weight: 700;
+    font-size: 13px !important;
+    animation: threat-flash 0.8s infinite;
+}
+
+@keyframes threat-flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.reminder-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.reminder-close-x {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--corp-gray);
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+.reminder-close-x:hover {
+    color: var(--corp-navy);
+}
+
+/* --- RAGE OVERLAY --- */
+.rage-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: rage-bg 0.2s infinite;
+}
+
+@keyframes rage-bg {
+    0% { background: rgba(229, 62, 62, 0.95); }
+    50% { background: rgba(180, 30, 30, 0.95); }
+    100% { background: rgba(229, 62, 62, 0.95); }
+}
+
+.rage-content {
+    text-align: center;
+}
+
+.rage-text {
+    font-size: 72px;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 0 40px rgba(255,255,255,0.5);
+    animation: rage-pulse 0.3s infinite;
+}
+
+@keyframes rage-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.rage-subtext {
+    font-size: 24px;
+    color: rgba(255,255,255,0.8);
+    margin: 16px 0 32px;
+}
+
+.rage-btn {
+    font-size: 18px;
+    padding: 16px 32px;
+    animation: rage-btn-pulse 0.5s infinite;
+}
+
+@keyframes rage-btn-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* --- SPEND MODAL --- */
+.spend-modal {
+    border-top-color: var(--corp-gold);
+}
+
+.spend-modal h2 {
+    color: var(--corp-gold);
+}
+
+.spend-amount {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--corp-navy);
+    margin: 16px 0;
+}
+
+.spend-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+/* --- FOOTER --- */
+.corporate-footer {
+    background: var(--corp-navy);
+    color: rgba(255,255,255,0.4);
+    padding: 12px 24px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-sep {
+    color: rgba(255,255,255,0.2);
+}
+
+/* --- SCREEN SHAKE --- */
+.screen-shake {
+    animation: screen-shake 0.5s ease-in-out;
+}
+
+@keyframes screen-shake {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-10px, -5px); }
+    20% { transform: translate(10px, 5px); }
+    30% { transform: translate(-8px, 3px); }
+    40% { transform: translate(8px, -3px); }
+    50% { transform: translate(-5px, 5px); }
+    60% { transform: translate(5px, -5px); }
+    70% { transform: translate(-3px, 3px); }
+    80% { transform: translate(3px, -3px); }
+    90% { transform: translate(-1px, 1px); }
+}
+
+/* --- COIN GRAB CURSOR --- */
+.grab-cursor {
+    cursor: grab;
+}
+
+.grab-cursor:active {
+    cursor: grabbing;
+}
+
+/* --- HAMMER CURSOR --- */
+.hammer-cursor {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text y="28" font-size="28">🔨</text></svg>') 4 4, pointer;
+}
+
+/* --- FLOATING REMINDER POPUPS --- */
+.floating-reminder {
+    position: fixed;
+    width: 220px;
+    background: white;
+    border: 2px solid var(--corp-red);
+    border-radius: 6px;
+    box-shadow: 0 4px 20px rgba(229, 62, 62, 0.3);
+    z-index: 2500;
+    animation: float-in 0.3s ease;
+    cursor: move;
+}
+
+@keyframes float-in {
+    from {
+        transform: scale(0.3) rotate(-10deg);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.floating-reminder-header {
+    background: var(--corp-red);
+    color: white;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px 4px 0 0;
+}
+
+.floating-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+}
+
+.floating-close:hover {
+    color: #ffd;
+}
+
+.floating-reminder-body {
+    padding: 10px;
+    font-size: 12px;
+    color: var(--corp-navy);
+    font-weight: 600;
+}
+
+.floating-reminder-body small {
+    color: var(--corp-gray);
+    font-weight: 400;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+        padding: 12px;
+    }
+    .jar-container {
+        min-height: 400px;
+    }
+}

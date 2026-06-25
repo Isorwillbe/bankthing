@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FISCALCORE™ Monetary Oversight Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+</head>
+<body>
+    <!-- ANNOYING REMINDER OVERLAYS -->
+    <div id="reminder-overlay" class="reminder-overlay hidden">
+        <div id="reminder-modal" class="reminder-modal">
+            <div class="reminder-siren">🚨</div>
+            <h2 id="reminder-title">UTILITY PAYMENT DUE</h2>
+            <p id="reminder-message"></p>
+            <p class="reminder-threat" id="reminder-threat"></p>
+            <div class="reminder-buttons">
+                <button id="reminder-pay-btn" class="corporate-btn btn-green">Pay Now</button>
+                <button id="reminder-dismiss-btn" class="corporate-btn btn-red">Dismiss</button>
+            </div>
+            <button id="reminder-close-x" class="reminder-close-x">×</button>
+        </div>
+    </div>
+
+    <!-- SECOND REMINDER (they multiply) -->
+    <div id="reminder-overlay-2" class="reminder-overlay reminder-overlay-2 hidden">
+        <div class="reminder-modal reminder-modal-2">
+            <div class="reminder-siren">⚠️</div>
+            <h2>WE NOTICED YOU DISMISSED THE REMINDER</h2>
+            <p>That was unwise.</p>
+            <p class="reminder-threat">Your utilities WILL be turned off. This is not a drill.</p>
+            <button id="reminder-2-pay" class="corporate-btn btn-green">FINE. PAY.</button>
+        </div>
+    </div>
+
+    <!-- FULLSCREEN RAGE REMINDER -->
+    <div id="rage-overlay" class="rage-overlay hidden">
+        <div class="rage-content">
+            <div class="rage-text" id="rage-text">PAY YOUR BILLS</div>
+            <div class="rage-subtext" id="rage-subtext">WE WILL NOT STOP</div>
+            <button id="rage-pay-btn" class="corporate-btn btn-green rage-btn">OKAY OKAY I'LL PAY</button>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="corporate-header">
+        <div class="header-left">
+            <div class="logo">FISCALCORE<span class="logo-trademark">™</span></div>
+            <div class="header-divider"></div>
+            <nav class="header-nav">
+                <span class="nav-item active">Dashboard</span>
+                <span class="nav-item">Accounts</span>
+                <span class="nav-item">Reports</span>
+                <span class="nav-item">Settings</span>
+            </nav>
+        </div>
+        <div class="header-right">
+            <span class="header-date" id="header-date"></span>
+            <div class="header-user">
+                <div class="user-avatar">JD</div>
+                <span class="user-name">J. Doe</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-grid">
+        <!-- LEFT PANEL: Account Summary & Utilities -->
+        <section class="panel panel-left">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Account Summary</h3>
+                    <span class="card-badge">Primary</span>
+                </div>
+                <div class="card-body">
+                    <div class="balance-display">
+                        <span class="balance-label">Available Balance</span>
+                        <span class="balance-amount" id="balance-display">$0.00</span>
+                    </div>
+                    <div class="balance-display">
+                        <span class="balance-label">In Penny Jar</span>
+                        <span class="balance-amount jar-balance" id="jar-balance-display">$0.00</span>
+                    </div>
+                    <div class="balance-display">
+                        <span class="balance-label">Jars Smashed (Lifetime)</span>
+                        <span class="balance-amount stat-number" id="jars-smashed">0</span>
+                    </div>
+                    <div class="balance-display">
+                        <span class="balance-label">Health</span>
+                        <span class="balance-amount" id="health-display" style="color:#38a169">100/100</span>
+                    </div>
+                    <div class="balance-display">
+                        <span class="balance-label">Gloves</span>
+                        <span class="balance-amount" id="gloves-status" style="font-size:13px;color:#e53e3e">None (shards cut you!)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Utility Bills</h3>
+                    <span class="card-badge badge-alert" id="overdue-count">0 Overdue</span>
+                </div>
+                <div class="card-body">
+                    <div class="utility-list" id="utility-list">
+                        <!-- Utilities injected by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Quick Deposit</h3>
+                </div>
+                <div class="card-body">
+                    <div class="deposit-form">
+                        <label class="form-label">Deposit Amount ($)</label>
+                        <input type="number" id="deposit-amount" class="corporate-input" placeholder="0.00" min="0" step="0.01">
+                        <button id="deposit-btn" class="corporate-btn btn-blue">Deposit to Account</button>
+                        <button id="deposit-jar-btn" class="corporate-btn btn-gold">Add to Penny Jar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CENTER: THE PENNY JAR ZONE -->
+        <section class="panel panel-center">
+            <div class="jar-zone-header">
+                <h3>Penny Jar</h3>
+                <div class="jar-tools">
+                    <button id="hammer-btn" class="tool-btn hammer-btn" title="SMASH">
+                        🔨
+                    </button>
+                    <button id="buy-jar-btn" class="tool-btn buy-jar-btn" title="Buy New Jar - $15">
+                        🏺 New Jar ($15)
+                    </button>
+                </div>
+            </div>
+            <div class="jar-status" id="jar-status">Jar is intact.</div>
+            <div class="jar-container" id="jar-container">
+                <canvas id="jar-canvas"></canvas>
+            </div>
+            <div class="jar-instructions" id="jar-instructions">
+                Add money to your jar. When you need it, grab the hammer and SMASH it open!
+            </div>
+        </section>
+
+        <!-- RIGHT PANEL: Transactions & Reminders -->
+        <section class="panel panel-right">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Transaction History</h3>
+                </div>
+                <div class="card-body">
+                    <div class="transaction-list" id="transaction-list">
+                        <div class="transaction-empty">No transactions yet</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Upcoming Reminders</h3>
+                    <span class="card-badge badge-alert" id="reminder-count">0 Active</span>
+                </div>
+                <div class="card-body">
+                    <div class="reminder-list" id="reminder-list">
+                        <div class="reminder-empty">No reminders</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Shard Collection</h3>
+                </div>
+                <div class="card-body">
+                    <div class="shard-info" id="shard-info">
+                        <p>Shards collected: <span id="shard-count">0</span></p>
+                        <p>Shards placed: <span id="shard-placed">0</span>/<span id="shard-total">0</span></p>
+                        <p class="shard-hint" id="shard-hint">Smash a jar to collect shards!</p>
+                    </div>
+                    <button id="reassemble-btn" class="corporate-btn btn-purple hidden">Reassemble Jar</button>
+                    <button id="buy-gloves-btn" class="corporate-btn btn-green" style="margin-top:8px;width:100%">🧤 Buy Gloves ($600)</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="corporate-footer">
+        <span>© 2026 FISCALCORE™ Global Holdings Ltd. All rights reserved.</span>
+        <span class="footer-sep">|</span>
+        <span>Privacy Policy</span>
+        <span class="footer-sep">|</span>
+        <span>Terms of Service</span>
+        <span class="footer-sep">|</span>
+        <span>Compliance</span>
+    </footer>
+
+    <!-- SPENDING MODAL -->
+    <div id="spend-overlay" class="reminder-overlay hidden">
+        <div class="reminder-modal spend-modal">
+            <h2>Spend Jar Funds</h2>
+            <p>You've smashed the jar! Grab coins to spend them.</p>
+            <div class="spend-amount">
+                <span>Spending: $</span><span id="spend-running">0.00</span>
+            </div>
+            <div class="spend-actions">
+                <button id="spend-confirm" class="corporate-btn btn-green">Confirm Spending</button>
+                <button id="spend-cancel" class="corporate-btn btn-red">Put Coins Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
